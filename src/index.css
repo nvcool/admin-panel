@@ -1,1 +1,12 @@
+@import url("https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap");
 @import "tailwindcss";
+
+@layer base {
+  body {
+    @apply bg-[#F5F6FA] text-[#202224] text-[18px] font-oswald;
+  }
+}
+
+@theme {
+  --font-oswald: "oswald";
+}
