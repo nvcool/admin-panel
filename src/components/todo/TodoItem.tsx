@@ -1,30 +1,48 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ITodo } from "../../types/ITodo";
 import Checkbox from "../ui/Checkbox";
 
 interface ITodoItemProps {
   todo: ITodo;
+  editId: number | null;
+  setEditId: React.Dispatch<React.SetStateAction<number | null>>;
   handleEdit: (todoId: number, currentText: string) => void;
 }
 
-const updateTodoItem = async (todo: ITodo) => {
-  return fetch(`http://localhost:3000/todos/${todo.id}`, {
-    method: "PUT",
-    body: JSON.stringify(todo),
+const deleteTodoItem = async (id: number) => {
+  const res = await fetch(`http://localhost:3000/todos/${id}`, {
+    method: "DELETE",
   });
+  return await res.json();
 };
 
 export const TodoItem = ({ todo, handleEdit }: ITodoItemProps) => {
-  const { mutate, isPending } = useMutation({
+  const queryClient = useQueryClient();
+
+  const { mutate: toggleCompleted, isPending } = useMutation({
     mutationFn: (todo: ITodo) =>
       fetch(`http://localhost:3000/todos/${todo.id}`, {
-        method: "PUT",
-        body: JSON.stringify(todo),
+        method: "PATCH",
+        body: JSON.stringify({ completed: todo.completed }),
       }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
+    },
   });
 
+  const { mutate: deleteMutate } = useMutation({
+    mutationFn: deleteTodoItem,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
+    },
+  });
+
+  const handleDelete = () => {
+    deleteMutate(todo.id);
+  };
+
   const onChange = (checked: boolean) => {
-    mutate({ ...todo, completed: checked });
+    toggleCompleted({ ...todo, completed: checked });
   };
 
   return (
@@ -40,13 +58,15 @@ export const TodoItem = ({ todo, handleEdit }: ITodoItemProps) => {
         }`}>
         {todo.title}
       </span>
-      <div className="flex gap-2">
+      <div className="flex gap-2 h-[43px]">
         <button
           onClick={() => handleEdit(todo.id, todo.title)}
           className="cursor-pointer bg-[#4880FF] text-white py-2 px-4 rounded-md hover:bg-[#487fffc0] transition-colors ease-in">
           edit
         </button>
-        <button className="cursor-pointer bg-[#eb363f] text-white py-2 px-4 rounded-md hover:bg-[#487fffc0] transition-colors ease-in">
+        <button
+          onClick={handleDelete}
+          className="cursor-pointer bg-[#eb363f] text-white py-2 px-4 rounded-md hover:bg-[#487fffc0] transition-colors ease-in">
           delete
         </button>
       </div>

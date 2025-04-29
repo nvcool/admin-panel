@@ -30,9 +30,9 @@ export const Todo = () => {
 
   return (
     <div className="grid gap-10 grid-cols-2">
-      <div className="bg-white rounded-xl p-5">
+      <div className="bg-white rounded-xl p-5 h-[400px]">
         <TodoForm
-          text={text}
+          title={text}
           setText={setText}
           editId={editId}
           setEditId={setEditId}
@@ -62,7 +62,12 @@ export const Todo = () => {
         </div>
         {isLoading && "loading . . ."}
         {data && (
-          <TodoList todos={data.data} setEditId={setEditId} setText={setText} />
+          <TodoList
+            editId={editId}
+            todos={data.data}
+            setEditId={setEditId}
+            setText={setText}
+          />
         )}
       </div>
     </div>

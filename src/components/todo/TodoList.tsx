@@ -3,6 +3,7 @@ import { ITodo } from "../../types/ITodo";
 import { TodoItem } from "./TodoItem";
 
 interface ITodoListProps {
+  editId: number | null;
   setEditId: React.Dispatch<React.SetStateAction<number | null>>;
   setText: React.Dispatch<React.SetStateAction<string>>;
   todos: ITodo[];
@@ -15,7 +16,12 @@ const getTodo = async (id: number) => {
   return res.json();
 };
 
-export const TodoList = ({ setEditId, setText, todos }: ITodoListProps) => {
+export const TodoList = ({
+  setEditId,
+  setText,
+  todos,
+  editId,
+}: ITodoListProps) => {
   const handleEdit = (todoId: number, currentText: string) => {
     setEditId(todoId);
     setText(currentText);
@@ -26,7 +32,12 @@ export const TodoList = ({ setEditId, setText, todos }: ITodoListProps) => {
       {todos.map((todo) => {
         return (
           <li key={todo.id}>
-            <TodoItem todo={todo} handleEdit={handleEdit} />
+            <TodoItem
+              editId={editId}
+              setEditId={setEditId}
+              todo={todo}
+              handleEdit={handleEdit}
+            />
           </li>
         );
       })}
