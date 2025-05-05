@@ -1,16 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ITodo } from "../../types/ITodo";
 import Checkbox from "../ui/Checkbox";
+import { API_URL } from "../../lib/query";
 
 interface ITodoItemProps {
   todo: ITodo;
-  editId: number | null;
-  setEditId: React.Dispatch<React.SetStateAction<number | null>>;
   handleEdit: (todoId: number, currentText: string) => void;
 }
 
 const deleteTodoItem = async (id: number) => {
-  const res = await fetch(`http://localhost:3000/todos/${id}`, {
+  const res = await fetch(`${API_URL}/todos/${id}`, {
     method: "DELETE",
   });
   return await res.json();
@@ -46,27 +45,30 @@ export const TodoItem = ({ todo, handleEdit }: ITodoItemProps) => {
   };
 
   return (
-    <div className="flex justify-between border-b pb-2 border-gray-300">
+    <div className="flex justify-between border-b border-gray-300 pb-2">
       <Checkbox
         isPending={isPending}
         onChange={onChange}
         todoCheck={todo.completed}
       />
       <span
-        className={`uppercase font-semibold ${
-          todo.completed ? " line-through opacity-50" : ""
-        }`}>
+        className={`font-semibold uppercase ${
+          todo.completed ? "line-through opacity-50" : ""
+        }`}
+      >
         {todo.title}
       </span>
-      <div className="flex gap-2 h-[43px]">
+      <div className="flex h-[43px] gap-2">
         <button
           onClick={() => handleEdit(todo.id, todo.title)}
-          className="cursor-pointer bg-[#4880FF] text-white py-2 px-4 rounded-md hover:bg-[#487fffc0] transition-colors ease-in">
+          className="cursor-pointer rounded-md bg-[#4880FF] px-4 py-2 text-white transition-colors ease-in hover:bg-[#487fffc0]"
+        >
           edit
         </button>
         <button
           onClick={handleDelete}
-          className="cursor-pointer bg-[#eb363f] text-white py-2 px-4 rounded-md hover:bg-[#487fffc0] transition-colors ease-in">
+          className="cursor-pointer rounded-md bg-[#eb363f] px-4 py-2 text-white transition-colors ease-in hover:bg-[#487fffc0]"
+        >
           delete
         </button>
       </div>

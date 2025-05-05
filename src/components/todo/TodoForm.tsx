@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { FormEvent } from "react";
-import { ITodo } from "../../types/ITodo";
+import { API_URL } from "../../lib/query";
 
 interface ITodoFormProps {
   title: string;
@@ -14,7 +14,7 @@ interface INewTodo {
 }
 
 const createTodo = async (newTodo: INewTodo) => {
-  const res = await fetch("http://localhost:3000/todos", {
+  const res = await fetch(`${API_URL}/todos`, {
     method: "POST",
     body: JSON.stringify(newTodo),
   });
@@ -22,7 +22,7 @@ const createTodo = async (newTodo: INewTodo) => {
 };
 
 const updateTodo = async ({ id, title }: { id: number; title: string }) => {
-  const res = await fetch(`http://localhost:3000/todos/${id}`, {
+  const res = await fetch(`${API_URL}/todos/${id}`, {
     method: "PATCH",
     body: JSON.stringify({ title }),
   });
@@ -69,15 +69,15 @@ export const TodoForm = ({
 
   return (
     <form onSubmit={handleSubmit} className="">
-      <div className="flex gap-5 justify-center">
+      <div className="flex justify-center gap-5">
         <input
           value={title}
           onChange={(e) => setText(e.target.value)}
-          className="w-[400px] hover:ring-1 focus:ring-2 outline-none py-2 px-4 rounded-xl ring-[#8280FF] transition-all ease-in bg-[#F5F6FA]"
+          className="w-[400px] rounded-xl bg-[#F5F6FA] px-4 py-2 ring-[#8280FF] transition-all ease-in outline-none hover:ring-1 focus:ring-2"
           type="text "
           placeholder="Add new todo . . ."
         />
-        <button className="bg-[#4880FF] text-white py-2 px-4 rounded-md cursor-pointer hover:bg-[#487fffc0] transition-colors ease-in">
+        <button className="cursor-pointer rounded-md bg-[#4880FF] px-4 py-2 text-white transition-colors ease-in hover:bg-[#487fffc0]">
           {editId !== null ? "save" : "add"}
         </button>
         {editId !== null && (
@@ -86,7 +86,8 @@ export const TodoForm = ({
               setEditId(null);
               setText("");
             }}
-            className="bg-[#eb363f] text-white py-2 px-4 rounded-md cursor-pointer hover:bg-[#487fffc0] transition-colors ease-in">
+            className="cursor-pointer rounded-md bg-[#eb363f] px-4 py-2 text-white transition-colors ease-in hover:bg-[#487fffc0]"
+          >
             cancel
           </button>
         )}

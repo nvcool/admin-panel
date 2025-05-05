@@ -29,8 +29,8 @@ export const Todo = () => {
   });
 
   return (
-    <div className="grid gap-10 grid-cols-2">
-      <div className="bg-white rounded-xl p-5 h-[400px]">
+    <div className="grid grid-cols-2 gap-10">
+      <div className="h-[400px] rounded-xl bg-white p-5">
         <TodoForm
           title={text}
           setText={setText}
@@ -39,22 +39,25 @@ export const Todo = () => {
         />
       </div>
       <div className=" ">
-        <div className="flex gap-5 text-xl justify-center mb-4">
+        <div className="mb-4 flex justify-center gap-5 text-xl">
           <button
             onClick={() => dispatch(prevPage())}
-            className="bg-white rounded-md p-2 cursor-pointer">
+            className="cursor-pointer rounded-md bg-white p-2"
+          >
             prev
           </button>
           <button
             onClick={() => dispatch(nextPage())}
-            className="bg-white rounded-md p-2 cursor-pointer">
+            className="cursor-pointer rounded-md bg-white p-2"
+          >
             next
           </button>
           <select
             onChange={(e) => dispatch(setLimit(+e.target.value))}
             value={pagination.limit}
             name=""
-            id="">
+            id=""
+          >
             <option value="5">5</option>
             <option value="10">10</option>
             <option value="20">20</option>

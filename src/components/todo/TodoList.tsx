@@ -1,4 +1,3 @@
-import { API_URL } from "../../lib/query";
 import { ITodo } from "../../types/ITodo";
 import { TodoItem } from "./TodoItem";
 
@@ -9,19 +8,7 @@ interface ITodoListProps {
   todos: ITodo[];
 }
 
-const getTodo = async (id: number) => {
-  const res = await fetch(`${API_URL}/todos/${id}}`);
-  console.log(res);
-
-  return res.json();
-};
-
-export const TodoList = ({
-  setEditId,
-  setText,
-  todos,
-  editId,
-}: ITodoListProps) => {
+export const TodoList = ({ setEditId, setText, todos }: ITodoListProps) => {
   const handleEdit = (todoId: number, currentText: string) => {
     setEditId(todoId);
     setText(currentText);
@@ -32,12 +19,7 @@ export const TodoList = ({
       {todos.map((todo) => {
         return (
           <li key={todo.id}>
-            <TodoItem
-              editId={editId}
-              setEditId={setEditId}
-              todo={todo}
-              handleEdit={handleEdit}
-            />
+            <TodoItem todo={todo} handleEdit={handleEdit} />
           </li>
         );
       })}
