@@ -27,7 +27,15 @@ export const PostsCreateModal = ({
   setModalOpen,
 }: IPostsCreateModalProps) => {
   return (
-    <Dialog.Root open={modalOpen} onOpenChange={setModalOpen}>
+    <Dialog.Root
+      open={modalOpen}
+      onOpenChange={(isOpen) => {
+        setModalOpen(isOpen);
+        if (!isOpen) {
+          setFormData({ title: "", body: "" });
+        }
+      }}
+    >
       <Dialog.Trigger className="h-fit cursor-pointer rounded-md bg-[#4880FF] px-8 py-4 text-xl text-white transition-colors ease-in hover:bg-[#487fffc0]">
         Create new Post
       </Dialog.Trigger>

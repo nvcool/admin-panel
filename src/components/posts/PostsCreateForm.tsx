@@ -73,15 +73,16 @@ export const PostsCreateForm = ({
 }: IPostsCreateFormProps) => {
   const queryClient = useQueryClient();
 
-  const { mutate: createMutate } = useMutation({
+  const { mutate: createMutate, isPending: isCreatePending } = useMutation({
     mutationFn: createPost,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["posts"] });
       setFormData({ title: "", body: "" });
+      setIsOpen(false);
     },
   });
 
-  const { mutate: updateMutate } = useMutation<
+  const { mutate: updateMutate, isPending: isUpdatePending } = useMutation<
     void,
     Error,
     { id: number; title: string; body: string }
@@ -89,6 +90,7 @@ export const PostsCreateForm = ({
     mutationFn: updatePost,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+      setIsOpen(false);
     },
   });
 
@@ -99,8 +101,6 @@ export const PostsCreateForm = ({
     } else {
       createMutate({ title: formData.title, body: formData.body });
     }
-    setFormData({ title: "", body: "" });
-    setIsOpen(false);
   };
 
   return (
@@ -129,7 +129,10 @@ export const PostsCreateForm = ({
           </label>
         );
       })}
-      <button className="cursor-pointer rounded-md bg-[#4880FF] px-8 py-4 text-xl text-white transition-colors ease-in hover:bg-[#487fffc0]">
+      <button
+        disabled={isCreatePending || isUpdatePending}
+        className="cursor-pointer rounded-md bg-[#4880FF] px-8 py-4 text-xl text-white transition-colors ease-in hover:bg-[#487fffc0]"
+      >
         {editId !== null ? "save" : "add"}
       </button>
     </form>

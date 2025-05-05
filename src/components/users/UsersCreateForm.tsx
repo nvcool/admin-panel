@@ -6,27 +6,25 @@ import { FormEvent } from "react";
 interface IUsersCreateFormProps {
   userId: number | null;
   setUserId: React.Dispatch<React.SetStateAction<number | null>>;
-  formData: UserCreatePayload;
-  setFormData: React.Dispatch<React.SetStateAction<UserCreatePayload>>;
+  formData: IUserForm;
+  setFormData: React.Dispatch<React.SetStateAction<IUserForm>>;
   setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-type InputField = keyof UserCreatePayload;
+export interface IUserForm {
+  name: string;
+  username: string;
+  email: string;
+  phone: string;
+  website: string;
+}
 
-const initialFormState: UserCreatePayload = {
+type InputField = keyof IUserForm;
+
+const initialFormState: IUserForm = {
   name: "",
   username: "",
   email: "",
-  address: {
-    street: "",
-    suite: "",
-    city: "",
-    zipcode: "",
-    geo: {
-      lat: "",
-      lng: "",
-    },
-  },
   phone: "",
   website: "",
 };
@@ -45,13 +43,7 @@ const inputs: {
     type: "text",
   },
   { name: "email", label: "Email", placeholder: "Email . . .", type: "email" },
-  {
-    name: "address",
-    label: "Street",
-    placeholder: "Street . . .",
-    type: "address",
-  },
-  { name: "phone", label: "Phone", placeholder: "Phone . . .", type: "number" },
+  { name: "phone", label: "Phone", placeholder: "Phone . . .", type: "text" },
   {
     name: "website",
     label: "WebSite",
@@ -60,7 +52,7 @@ const inputs: {
   },
 ];
 
-const createUser = async (newUser: UserCreatePayload) => {
+const createUser = async (newUser: IUserForm) => {
   const res = await fetch(`${API_URL}/users`, {
     method: "POST",
     body: JSON.stringify(newUser),
@@ -73,13 +65,12 @@ const updateUser = async ({
   name,
   username,
   email,
-  address,
   phone,
   website,
-}: Omit<IUser, "company">) => {
+}: IUserForm & { id: number }) => {
   const res = await fetch(`${API_URL}/users/${id}`, {
     method: "PATCH",
-    body: JSON.stringify({ name, username, email, address, phone, website }),
+    body: JSON.stringify({ name, username, email, phone, website }),
   });
   return await res.json();
 };
@@ -93,23 +84,21 @@ export const UsersCreateForm = ({
 }: IUsersCreateFormProps) => {
   const queryClient = useQueryClient();
 
-  const { mutate: createMutateUser } = useMutation({
+  const { mutate: createMutateUser, isPending: isCreatePending } = useMutation({
     mutationFn: createUser,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
       setFormData(initialFormState);
+      setModalOpen(false);
     },
   });
 
-  const { mutate: updateMutate } = useMutation<
-    void,
-    Error,
-    Omit<IUser, "company">
-  >({
+  const { mutate: updateMutate, isPending: isEditPending } = useMutation({
     mutationFn: updateUser,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
       setFormData(initialFormState);
+      setModalOpen(false);
     },
   });
 
@@ -119,7 +108,6 @@ export const UsersCreateForm = ({
       name: formData.name,
       username: formData.username,
       email: formData.email,
-      address: formData.address,
       phone: formData.phone,
       website: formData.website,
     };
@@ -134,7 +122,6 @@ export const UsersCreateForm = ({
         ...formData2,
       });
     }
-    setModalOpen(false);
   };
 
   return (
@@ -144,6 +131,14 @@ export const UsersCreateForm = ({
           <label className="mb-4 grid w-fit justify-center rounded-xl border border-[#F5F6FA] p-2">
             <span className="mb-2 pl-4 text-xl">{input.label}</span>
             <input
+              name={input.name}
+              value={formData[input.name]}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  [input.name]: e.target.value,
+                }))
+              }
               className="w-[400px] rounded-xl bg-[#F5F6FA] px-4 py-2 ring-[#8280FF] transition-all ease-in outline-none hover:ring-1 focus:ring-2"
               placeholder={input.placeholder}
               type={input.type}
@@ -151,7 +146,10 @@ export const UsersCreateForm = ({
           </label>
         );
       })}
-      <button className="cursor-pointer rounded-md bg-[#4880FF] px-8 py-4 text-xl text-white transition-colors ease-in hover:bg-[#487fffc0]">
+      <button
+        disabled={isCreatePending || isEditPending}
+        className="cursor-pointer rounded-md bg-[#4880FF] px-8 py-4 text-xl text-white transition-colors ease-in hover:bg-[#487fffc0]"
+      >
         {userId ? "save" : "add"}
       </button>
     </form>

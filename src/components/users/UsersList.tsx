@@ -1,12 +1,11 @@
 import { UsersItem } from "./UsersItem";
-import { IUser } from "../../types/IUser";
-import { UsersFormData } from "./Users";
+import { IUser, UserCreatePayload } from "../../types/IUser";
 
 interface IUsersListProps {
   users: IUser[] | undefined;
   setUserId: React.Dispatch<React.SetStateAction<number | null>>;
   setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setFormData: React.Dispatch<React.SetStateAction<UsersFormData>>;
+  setFormData: React.Dispatch<React.SetStateAction<UserCreatePayload>>;
 }
 
 export const UsersList = ({
@@ -15,23 +14,10 @@ export const UsersList = ({
   setFormData,
   setModalOpen,
 }: IUsersListProps) => {
-  const handleEditUser = (
-    userId: number,
-    currentName: string,
-    currentUserName: string,
-    currentEmail: string,
-    currentAddress: string,
-    currentPhone: string,
-    currentWebsite: string,
-  ) => {
-    setUserId(userId);
+  const handleEditUser = (user: IUser) => {
+    setUserId(user.id);
     setFormData({
-      name: currentName,
-      username: currentUserName,
-      email: currentEmail,
-      address: currentAddress,
-      phone: currentPhone,
-      website: currentWebsite,
+      ...user,
     });
     setModalOpen(true);
   };

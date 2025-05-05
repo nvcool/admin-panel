@@ -29,7 +29,13 @@ export const PostsList = ({
     <ul>
       <li className="grid gap-5">
         {posts.map((item) => {
-          return <PostsItem item={item} handleEditPost={handleEditPost} />;
+          return (
+            <PostsItem
+              key={item.id}
+              item={item}
+              handleEditPost={handleEditPost}
+            />
+          );
         })}
       </li>
     </ul>

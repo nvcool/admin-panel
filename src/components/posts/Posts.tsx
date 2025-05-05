@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store";
 import { PostsCreateModal } from "./PostsCreateModal";
 import { useState } from "react";
-import { nextPage, prevPage, setLimit } from "../todo/TodoSlice";
+import { nextPage, prevPage, setLimit } from "../posts/postSlice";
 
 export type IPostFormData = {
   title: string;
@@ -27,7 +27,7 @@ export const Posts = () => {
   const [editId, setEditId] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
 
-  const pagination = useSelector((state: RootState) => state.todoPage);
+  const pagination = useSelector((state: RootState) => state.postPage);
   const dispatch = useDispatch();
 
   const { data: posts, isLoading } = useQuery({
@@ -56,12 +56,14 @@ export const Posts = () => {
           >
             prev
           </button>
-          <button
-            onClick={() => dispatch(nextPage())}
-            className="cursor-pointer rounded-md bg-white p-2"
-          >
-            next
-          </button>
+          {pagination.page !== posts?.last && (
+            <button
+              onClick={() => dispatch(nextPage())}
+              className="cursor-pointer rounded-md bg-white p-2"
+            >
+              next
+            </button>
+          )}
           <select
             onChange={(e) => dispatch(setLimit(+e.target.value))}
             value={pagination.limit}

@@ -2,12 +2,13 @@ import { useQuery } from "@tanstack/react-query";
 import { UsersCreateModal } from "./UsersCreateModal";
 import { UsersList } from "./UsersList";
 import { API_URL } from "../../lib/query";
-import { IUser, UserCreatePayload } from "../../types/IUser";
+import { IUser } from "../../types/IUser";
 import { IPaginationResponse } from "../../types/IPaginationResponse";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store";
-import { nextPage, prevPage, setLimit } from "../todo/TodoSlice";
+import { nextPage, prevPage, setLimit } from "../users/userSlice";
 import { useState } from "react";
+import { IUserForm } from "./UsersCreateForm";
 
 const getAllUsers = async (page: number, limit: number) => {
   const res = await fetch(`${API_URL}/users?_page=${page}&_per_page=${limit}`);
@@ -15,27 +16,17 @@ const getAllUsers = async (page: number, limit: number) => {
 };
 
 export const Users = () => {
-  const [formData, setFormData] = useState<UserCreatePayload>({
+  const [formData, setFormData] = useState<IUserForm>({
     name: "",
     username: "",
     email: "",
-    address: {
-      street: "",
-      suite: "",
-      city: "",
-      zipcode: "",
-      geo: {
-        lat: "",
-        lng: "",
-      },
-    },
     phone: "",
     website: "",
   });
   const [userId, setUserId] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
 
-  const pagination = useSelector((state: RootState) => state.todoPage);
+  const pagination = useSelector((state: RootState) => state.userPage);
   const dispatch = useDispatch();
 
   const { data: users, isLoading } = useQuery({
@@ -63,12 +54,14 @@ export const Users = () => {
           >
             prev
           </button>
-          <button
-            onClick={() => dispatch(nextPage())}
-            className="cursor-pointer rounded-md bg-white p-2"
-          >
-            next
-          </button>
+          {pagination.page !== users?.last && (
+            <button
+              onClick={() => dispatch(nextPage())}
+              className="cursor-pointer rounded-md bg-white p-2"
+            >
+              next
+            </button>
+          )}
           <select
             onChange={(e) => dispatch(setLimit(+e.target.value))}
             value={pagination.limit}

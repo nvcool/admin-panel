@@ -4,15 +4,7 @@ import { IUser } from "../../types/IUser";
 
 interface IUsetItemProps {
   user: IUser;
-  handleEditUser: (
-    userId: number,
-    currentName: string,
-    currentUserName: string,
-    currentEmail: string,
-    currentAddress: string,
-    currentPhone: string,
-    currentWebsite: string,
-  ) => void;
+  handleEditUser: (user: IUser) => void;
 }
 
 const deleteUser = async (id: number) => {
@@ -25,7 +17,7 @@ const deleteUser = async (id: number) => {
 export const UsersItem = ({ user, handleEditUser }: IUsetItemProps) => {
   const queryClient = useQueryClient();
 
-  const { mutate: deleteMutate } = useMutation({
+  const { mutate: deleteMutate, isPending } = useMutation({
     mutationFn: deleteUser,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
@@ -44,44 +36,28 @@ export const UsersItem = ({ user, handleEditUser }: IUsetItemProps) => {
             <span>{user.name}</span>
             <span>{user.username}</span>
           </div>
-          <span>mail: {user.email}</span>
         </div>
         <div className="grid">
-          <span>Street: {user.address.street}</span>
-          <span>Suite: {user.address.suite}</span>
-          <span>City: {user.address.city}</span>
-          <span>Zipcode: {user.address.zipcode}</span>
-          <span>lat: {user.address.geo.lat}</span>
-          <span>lng: {user.address.geo.lng}</span>
+          <span>Website: {user.website}</span>
         </div>
         <div className="grid h-fit">
           <span>Phone: {user.phone}</span>
           <span>WebSite: {user.website}</span>
         </div>
         <div className="grid">
-          <span>CompanyName: {user.company.name}</span>
-          <span>CatchPhrase: {user.company.catchPhrase}</span>
-          <span>Bs: {user.company.bs}</span>
+          <span>mail: {user.email}</span>
         </div>
       </div>
       <div className="flex justify-center gap-5">
         <button
-          onClick={() =>
-            handleEditUser(
-              user.id,
-              user.name,
-              user.username,
-              user.email,
-              user.address.city,
-              user.phone,
-              user.website,
-            )
-          }
+          disabled={isPending}
+          onClick={() => handleEditUser(user)}
           className="cursor-pointer rounded-md bg-[#4880FF] px-4 py-2 text-xl text-white transition-colors ease-in hover:bg-[#487fffc0]"
         >
           Edit
         </button>
         <button
+          disabled={isPending}
           onClick={handleDelete}
           className="cursor-pointer rounded-md bg-[#d4550b] px-4 py-2 text-xl text-white transition-colors ease-in hover:bg-[#976f57]"
         >

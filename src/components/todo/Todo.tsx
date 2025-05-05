@@ -7,11 +7,10 @@ import { useQuery } from "@tanstack/react-query";
 import { API_URL } from "../../lib/query";
 import { IPaginationResponse } from "../../types/IPaginationResponse";
 import { ITodo } from "../../types/ITodo";
-import { nextPage, prevPage, setLimit } from "./TodoSlice";
+import { nextPage, prevPage, setLimit } from "./todoSlice";
 
 const getAllTodos = async (page: number, limit: number) => {
   const res = await fetch(`${API_URL}/todos?_page=${page}&_per_page=${limit}`);
-  console.log(res);
 
   return (await res.json()) as IPaginationResponse<ITodo>;
 };
@@ -46,12 +45,14 @@ export const Todo = () => {
           >
             prev
           </button>
-          <button
-            onClick={() => dispatch(nextPage())}
-            className="cursor-pointer rounded-md bg-white p-2"
-          >
-            next
-          </button>
+          {pagination.page !== data?.last && (
+            <button
+              onClick={() => dispatch(nextPage())}
+              className="cursor-pointer rounded-md bg-white p-2"
+            >
+              next
+            </button>
+          )}
           <select
             onChange={(e) => dispatch(setLimit(+e.target.value))}
             value={pagination.limit}
